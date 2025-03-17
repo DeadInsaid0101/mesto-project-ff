@@ -1,41 +1,42 @@
+import { createCard } from "./card";
+import { deleteCard } from "./card";
+import { likeCard } from "./card";
+import { clickPopupImage } from "..";
+
 export function openPopup(popup) {
     popup.classList.add('popup_is-opened')
-
+    document.addEventListener('keydown', handleEscape);
 }
 
 export function closePopup(popup) {
     popup.classList.remove('popup_is-opened')
+    document.removeEventListener('keydown', handleEscape);
 }
 
-export function clickPopupImage(link, name) {
-    const popupTypeImage = document.querySelector('.popup_type_image');
-    const popupImage = document.querySelector('.popup__image');
-    const popupCaption = document.querySelector('.popup__caption')
 
-    popupImage.src = link;
-    popupImage.alt = name;
-    popupCaption.textContent = name;
-
-    openPopup(popupTypeImage);
-}
-
-export function handleEditFormSubmit(evt) {
+export function handleNewCardFormSubmit(evt) {
     evt.preventDefault();
-    const popupForm = document.querySelector('.popup__form');
-    const name = popupForm.querySelector('.popup__input_type_name');
-    const description = popupForm.querySelector('.popup__input_type_description');
+    const placeList = document.querySelector(".places__list");
+    const placeName = evt.target.querySelector('.popup__input_type_card-name').value;
+    const imageUrl = evt.target.querySelector('.popup__input_type_url').value;
+    const popupTypeNewCard = document.querySelector('.popup_type_new-card');
 
-    const newName = name.value
-    const newDescription = description.value
+    const newCardData = {
+        name: placeName,
+        link: imageUrl
+    };
 
-    const profileTitle = document.querySelector('.profile__title');
-    const profileDescription = document.querySelector('.profile__description');
+    const newCard = createCard(newCardData, deleteCard, clickPopupImage, likeCard);
+    placeList.prepend(newCard);
 
-    profileTitle.textContent = newName
-    profileDescription.textContent = newDescription
+    closePopup(popupTypeNewCard);
 
-    const popupTypeEdit = document.querySelector('.popup_type_edit');
+}
 
-    closePopup(popupTypeEdit)
+function handleEscape(evt) {
+    if (evt.key === 'Escape') {
+        const openedPopup = document.querySelector('.popup_is-opened')
+        closePopup(openedPopup)
+    }
 }
 

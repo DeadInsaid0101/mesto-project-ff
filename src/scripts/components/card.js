@@ -1,6 +1,3 @@
-import { clickPopupImage } from './modal.js';
-import { closePopup } from './modal.js';
-
 export const deleteCard = (cardElement) => {
     cardElement.remove();
 };
@@ -27,25 +24,6 @@ export const createCard = (initialCards, deleteCard, clickPopupImage, likeCard) 
 
     return cardElement;
 };
-
-export function handleNewCardFormSubmit(evt) {
-    evt.preventDefault();
-    const placeList = document.querySelector(".places__list");
-    const placeName = evt.target.querySelector('.popup__input_type_card-name').value;
-    const imageUrl = evt.target.querySelector('.popup__input_type_url').value;
-    const popupTypeNewCard = document.querySelector('.popup_type_new-card');
-
-    const newCardData = {
-        name: placeName,
-        link: imageUrl
-    };
-
-    const newCard = createCard(newCardData, deleteCard, clickPopupImage, likeCard);
-    placeList.prepend(newCard);
-
-    closePopup(popupTypeNewCard);
-
-}
 
 export function likeCard(evt) {
     evt.target.classList.toggle('card__like-button_is-active');
