@@ -4,7 +4,6 @@ import { deleteCard } from './components/card.js';
 import { createCard } from './components/card.js';
 import { openPopup } from './components/modal.js';
 import { closePopup } from './components/modal.js';
-import { handleNewCardFormSubmit } from './components/modal.js';
 import { likeCard } from './components/card.js';
 
 
@@ -73,4 +72,23 @@ export function handleEditFormSubmit(evt) {
     profileDescription.textContent = newDescription
 
     closePopup(popupTypeEdit)
+}
+
+function handleNewCardFormSubmit(evt) {
+    evt.preventDefault();
+    const placeList = document.querySelector(".places__list");
+    const placeName = evt.target.querySelector('.popup__input_type_card-name').value;
+    const imageUrl = evt.target.querySelector('.popup__input_type_url').value;
+    const popupTypeNewCard = document.querySelector('.popup_type_new-card');
+
+    const newCardData = {
+        name: placeName,
+        link: imageUrl
+    };
+
+    const newCard = createCard(newCardData, deleteCard, clickPopupImage, likeCard);
+    placeList.prepend(newCard);
+
+    closePopup(popupTypeNewCard);
+
 }
