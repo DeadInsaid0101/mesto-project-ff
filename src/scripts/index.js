@@ -2,7 +2,7 @@ import '../pages/index.css';
 import { deleteCard, createCard, handleLikeCard } from './components/card.js';
 import { openPopup, closePopup } from './components/modal.js';
 import { enableValidation, clearValidation } from './components/validation.js';
-import { loadUserInfo, loadCards, updateUserInfo, addNewCard, updateAvatar } from './api.js';
+import { loadUserInfo, loadCards, updateUserInfo, addNewCard, updateAvatar, deleteCardFromServer } from './api.js';
 
 const validationConfig = {
   formSelector: '.popup__form',
@@ -34,7 +34,35 @@ const popupTypeAvatar = document.querySelector('.popup_type_avatar');
 const avatarForm = document.forms['edit-avatar'];
 const avatarInput = avatarForm.querySelector('.popup__input_type_avatar');
 const profileAvatar = document.querySelector('.profile__image');
+const popupTypeBeforeDelete = document.querySelector('.popup_type_before_delete');
+const popupButtonDeleteCard = document.querySelector('.button_delete_popup');
 const popups = Array.from(document.querySelectorAll('.popup'));
+
+const handleConfirm = () => {
+  const originalText = popupButtonDeleteCard.textContent;
+  popupButtonDeleteCard.textContent = 'Удаление...';
+  popupButtonDeleteCard.disabled = true;
+
+  deleteCardFromServer(popupTypeBeforeDelete._cardId)
+    .then(() => {
+      deleteCard(popupTypeBeforeDelete._cardElement);
+      closePopup(popupTypeBeforeDelete);
+    })
+    .catch(err => {
+      console.log(err);
+    })
+    .finally(() => {
+      popupButtonDeleteCard.textContent = originalText;
+      popupButtonDeleteCard.disabled = false;
+    });
+};
+
+popupButtonDeleteCard.addEventListener('click', handleConfirm);
+const openPopupTypeBeforeDelete = (cardElement, cardId) => {
+  popupTypeBeforeDelete._cardElement = cardElement;
+  popupTypeBeforeDelete._cardId = cardId;
+  openPopup(popupTypeBeforeDelete);
+};
 
 profileEditButton.addEventListener('click', () => {
   openPopup(popupTypeEdit)
@@ -118,7 +146,7 @@ function handleNewCardFormSubmit(evt) {
           ownerId: cardData.owner._id,
           cardId: cardData._id
         },
-        (element) => deleteCard(element, cardData._id),
+        openPopupTypeBeforeDelete,
         clickPopupImage,
         handleLikeCard,
         currentUserId
@@ -183,7 +211,7 @@ Promise.all([loadUserInfo(), loadCards()])
           ownerId: card.owner._id,
           cardId: card._id
         },
-        (element) => deleteCard(element, card._id),
+        openPopupTypeBeforeDelete,
         clickPopupImage,
         handleLikeCard,
         currentUserId
